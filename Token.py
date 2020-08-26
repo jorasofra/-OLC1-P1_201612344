@@ -51,16 +51,16 @@ class Token:
         self.__tipo_token = tipo_token
     
     def getTipo(self):
-        return __tipo_token
+        return self.__tipo_token
 
     def getFila(self):
-        return __fila
+        return self.__fila
 
     def getColumna(self):
-        return __columna
+        return self.__columna
 
     def getLexema(self):
-        return __lexema
+        return self.__lexema
 
     def setTipo(self, tipo):
         self.__tipo_token = tipo

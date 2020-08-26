@@ -1,7 +1,7 @@
 import Token
 import TipoToken
+import AnalizadorHTML
 
-tipo = TipoToken.TipoToken
-token = Token.Token(0,1,True,tipo.BOOLENANO.value)
-
-print(token.getTipoString())
+analizador = AnalizadorHTML.AnalizadorHTML()
+analizador.analisis("\" Hola \"")
+print(analizador.imprimirLista())
