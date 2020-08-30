@@ -1,6 +1,6 @@
-import ErrorLexico
-import TipoToken
-import Token
+from ErrorLexico import ErrorLexico
+from TipoToken import TipoToken
+from Token import Token
 
 class AnalizadorHTML:
 
@@ -13,10 +13,42 @@ class AnalizadorHTML:
         self.__letra = ''
         self.__listaTokens = []
         self.__listaErrores= []
+        self.__reservadas = (
+            "HTML",
+            "head",
+            "title",
+            "body",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "p",
+            "br",
+            "img",
+            "src",
+            "a",
+            "href",
+            "ul",
+            "li",
+            "style",
+            "table",
+            "border",
+            "caption",
+            "table",
+            "th",
+            "td",
+            "caption",
+            "colgroup",
+            "col",
+            "thead",
+            "tbody",
+            "tfoot"
+        )
 
     def analisis(self, texto):
         texto = texto + " $"
-
         while texto[self.__puntero] != "$":
             self.__letra = texto[self.__puntero]
             self.__case(self.__estado)
@@ -39,6 +71,9 @@ class AnalizadorHTML:
         elif self.__letra.isalpha():
             self.__estado = 8
             self.__lexema = self.__lexema + self.__letra
+        elif self.__esVacio():
+            self.__estado = 0
+            self.__lexema = ""
         else:
             self.__agregarError()
             self.__estado = 0
@@ -53,7 +88,7 @@ class AnalizadorHTML:
             self.__lexema = self.__lexema + self.__letra
 
     def dos(self):
-        self.__agregarToken(TipoToken.TipoToken.CADENA.value)
+        self.__agregarToken(TipoToken.CADENA.value)
         self.__puntero = self.__puntero - 1
         self.__columna = self.__columna - 1
         self.__estado = 0
@@ -67,14 +102,14 @@ class AnalizadorHTML:
             self.__agregarError()
 
     def cuatro(self):
-        self.__agregarToken(TipoToken.TipoToken.CIERRE_ETIQUETA_UNILINEA.value)
+        self.__agregarToken(TipoToken.CIERRE_ETIQUETA_UNILINEA.value)
         self.__puntero = self.__puntero - 1
         self.__columna = self.__columna - 1
         self.__estado = 0
         self.__lexema = ""
 
     def cinco(self):
-        self.__agregarToken(TipoToken.TipoToken.CIERRE_ETIQUETA_APERTURA.value)
+        self.__agregarToken(TipoToken.CIERRE_ETIQUETA_APERTURA.value)
         self.__puntero = self.__puntero - 1
         self.__columna = self.__columna - 1
         self.__estado = 0
@@ -85,7 +120,7 @@ class AnalizadorHTML:
             self.__estado = 7
             self.__lexema = self.__lexema + self.__letra
         else:
-            self.__agregarToken(TipoToken.TipoToken.ETIQUETA_APERTURA.value)
+            self.__agregarToken(TipoToken.ETIQUETA_APERTURA.value)
             self.__puntero = self.__puntero - 1
             self.__columna = self.__columna - 1
             self.__estado = 0
@@ -93,7 +128,7 @@ class AnalizadorHTML:
 
     def siete(self):
         
-        self.__agregarToken(TipoToken.TipoToken.APERTURA_ETIQUETA_CIERRE.value)
+        self.__agregarToken(TipoToken.APERTURA_ETIQUETA_CIERRE.value)
         self.__puntero = self.__puntero - 1
         self.__columna = self.__columna - 1
         self.__estado = 0
@@ -104,7 +139,10 @@ class AnalizadorHTML:
             self.__estado = 7
             self.__lexema = self.__lexema + self.__letra
         else:
-            self.__agregarToken(TipoToken.TipoToken.PALABRA_RESERVADA.value)
+            if self.__lexema in self.__reservadas:
+                self.__agregarToken(TipoToken.PALABRA_RESERVADA.value)
+            else:
+                self.__agregarToken(TipoToken.TEXTO.value)
             self.__puntero = self.__puntero - 1
             self.__columna = self.__columna - 1
             self.__estado = 0
@@ -122,12 +160,12 @@ class AnalizadorHTML:
         return False
 
     def __agregarToken(self, tipo):
-        nuevo = Token.Token(self.__fila, self.__columna, self.__lexema, tipo)
+        nuevo = Token(self.__fila, self.__columna, self.__lexema, tipo)
         self.__listaTokens.append(nuevo)
 
     def __agregarError(self):
         descr = "No pertenece al lenguaje"
-        error = ErrorLexico.ErrorLexico(self.__fila, self.__columna, self.__lexema, descr)
+        error = ErrorLexico(self.__fila, self.__columna, self.__lexema, descr)
         self.__listaErrores.append(error)
 
     def getTokens(self):
