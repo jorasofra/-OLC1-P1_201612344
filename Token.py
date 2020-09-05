@@ -41,8 +41,8 @@ class Token:
         36:"Cierre Etiqueta",
         37:"Etiqueta Apertura",
         38:"Etiqueta Apertura Cierre",
-        39:"Cierre Etiqueta Apertura"
-        40:"Texto"
+        39:"Cierre Etiqueta Apertura",
+        40:"Texto",
         41:"Dos Puntos"
         }
 

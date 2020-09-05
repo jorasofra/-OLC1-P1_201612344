@@ -1,7 +1,6 @@
 import Token
 import TipoToken
 import AnalizadorHTML
+from Ventana import Ventana
 
-analizador = AnalizadorHTML.AnalizadorHTML()
-analizador.analisis("\" Hola \"")
-print(analizador.imprimirLista())
+v = Ventana()
