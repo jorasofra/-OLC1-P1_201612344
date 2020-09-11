@@ -117,6 +117,9 @@ class AnalizadorCss:
         elif self.__letra.isalpha():
             self.__estado = 11
             self.__lexema += self.__letra
+        elif self.__letra.isdigit():
+            self.__estado = 7
+            self.__lexema += self.__letra
         elif self.__esVacio():
             self.__estado = 0
             self.__lexema = ""
@@ -271,7 +274,7 @@ class AnalizadorCss:
             self.__lexema += self.__letra
 
     def quince(self):
-        if self.__letra = ":":
+        if self.__letra == ":":
             self.__estado = 25
             self.__lexema += self.__letra
         else:
@@ -351,19 +354,20 @@ class AnalizadorCss:
         self.__estado = 0
         self.__lexema = ""
 
-    def __esVacio(self, caracter):
-        if caracter == ' ':
+    def __esVacio(self):
+        if self.__letra == ' ':
             return True
-        elif caracter == '\n':
+        elif self.__letra == '\n':
             self.__fila = self.__fila + 1
             self.__columna = 1
             return True
-        elif caracter == '\t':
+        elif self.__letra == '\t':
             return True
         return False
 
     def __agregarToken(self, tipo):
         nuevo = Token(self.__fila, self.__columna, self.__lexema, tipo)
+        print(self.__lexema)
         self.__listaTokens.append(nuevo)
 
     def __agregarError(self):

@@ -143,26 +143,28 @@ class AnalizadorJS:
             self.__lexema = ""
 
     def cuatro(self):
-        if self.__letra.isalpha():
-            self.__estado = 5
+        if self.__letra == "'":
+            self.__estado = 28
             self.__lexema += self.__letra
         else:
-            self.__agregarError()
-            self.__estado = 0
-            self.__lexema = ""
+            self.__estado = 5
+            self.__lexema += self.__letra
 
     def cinco(self):
         if self.__letra == "'":
             self.__estado = 28
             self.__lexema += self.__letra
         else:
-            self.__agregarError()
-            self.__estado = 0
-            self.__lexema = ""
+            self.__estado = 5
+            self.__lexema += self.__letra
 
     def seis(self):
-        self.__estado = 7
-        self.__lexema += self.__letra
+        if self.__letra == "\"":
+            self.__estado = 29
+            self.__lexema += self.__letra
+        else:
+            self.__estado = 7
+            self.__lexema += self.__letra
 
     def siete(self):
         if self.__letra == "\"":
@@ -210,6 +212,8 @@ class AnalizadorJS:
         if self.__letra == "*":
             self.__estado = 12
             self.__lexema += self.__letra
+        elif self.__esVacio():
+            self.__lexema += self.__letra
         else:
             self.__estado = 11
             self.__lexema += self.__letra
@@ -218,10 +222,14 @@ class AnalizadorJS:
         if self.__letra == "/":
             self.__estado = 32
             self.__lexema += self.__letra
+        elif self.__letra == "*":
+            self.__estado = 12
+            self.__lexema += self.__letra
+        elif self.__esVacio():
+            self.__lexema += self.__letra
         else:
-            self.__agregarError()
-            self.__estado = 0
-            self.__lexema = ""
+            self.__estado = 11
+            self.__lexema += self.__letra
 
     def trece(self):
         if self.__letra == "\n":
@@ -411,20 +419,22 @@ class AnalizadorJS:
         self.__estado = 0
         self.__lexema = ""
 
-    def __esVacio(self, caracter):
-        if caracter == ' ':
+    def __esVacio(self):
+        if self.__letra == ' ':
             return True
-        elif caracter == '\n':
+        elif self.__letra == '\n':
             self.__fila = self.__fila + 1
             self.__columna = 1
             return True
-        elif caracter == '\t':
+        elif self.__letra == '\t':
             return True
         return False
 
     def __agregarToken(self, tipo):
         nuevo = Token(self.__fila, self.__columna, self.__lexema, tipo)
+        print(self.__lexema)
         self.__listaTokens.append(nuevo)
+
 
     def __agregarError(self):
         descr = "No pertenece al lenguaje"
