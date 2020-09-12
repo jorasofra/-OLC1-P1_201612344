@@ -96,6 +96,9 @@ class AnalizadorJS:
         elif self.__letra == "<":
             self.__estado = 15
             self.__lexema += self.__letra
+        elif self.__letra == ":":
+            self.__estado = 36
+            self.__lexema += self.__letra
         elif self.__letra.isdigit():
             self.__estado = 16
             self.__lexema += self.__letra
@@ -419,6 +422,13 @@ class AnalizadorJS:
         self.__estado = 0
         self.__lexema = ""
 
+    def treintayseis(self):
+        self.__agregarToken(TipoToken.DOS_PUNTOS.value)
+        self.__columna -= 1
+        self.__puntero -= 1
+        self.__estado = 0
+        self.__lexema = ""
+
     def __esVacio(self):
         if self.__letra == ' ':
             return True
@@ -432,9 +442,7 @@ class AnalizadorJS:
 
     def __agregarToken(self, tipo):
         nuevo = Token(self.__fila, self.__columna, self.__lexema, tipo)
-        print(self.__lexema)
         self.__listaTokens.append(nuevo)
-
 
     def __agregarError(self):
         descr = "No pertenece al lenguaje"
@@ -484,7 +492,8 @@ class AnalizadorJS:
             32:self.treintaydos,
             33:self.treintaytres,
             34:self.treintaycuatro,
-            35:self.treintaycinco
+            35:self.treintaycinco,
+            36:self.treintayseis
         }
         func = estados.get(est)
         func()

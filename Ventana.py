@@ -29,16 +29,72 @@ class Ventana(QMainWindow):
             texto = file.read()
             self.texto.clear()
             self.texto.appendPlainText(texto)
-            self.__extesion =os.path.splitext(self.__fileName)[1]
+
+            self.__extesion = os.path.splitext(self.__fileName)[1]
             file.close()
 
     def analizar(self):
         if self.__extesion == ".js":
             self.__js.analisis(self.texto.toPlainText())
-            print("Finalizado")
         elif self.__extesion == ".css":
             self.__css.analisis(self.texto.toPlainText())
-            print("Finalizado")
         elif self.__extesion == ".html":
             self.__ht.analisis(self.texto.toPlainText())
-            print("Finalizado")
+        self.generarReporteErrores()
+
+    def generarReporteErrores(self):
+        archivo = os.path.split(self.__fileName)[1]
+        nombreArchivo = os.path.splitext(archivo)[0] + "_errores.html"
+        errores = open(nombreArchivo, "w")
+
+        contador = 1
+
+        errores.write("<!DOCTYPE html>\n")
+        errores.write("<html>\n")
+        errores.write("<h1>Reporte de Errores<h1>\n")
+
+        errores.write("<table class=\"egt\" border=\"1\">\n")
+        errores.write("<tr>\n")
+        errores.write("<th>No.</th>\n")
+        errores.write("<th>Linea</th>\n")
+        errores.write("<th>Columna</th>\n")
+        errores.write("<th>Descripcion</th>\n")
+        errores.write("<th>Simbolo</th>\n")
+        errores.write("<tr>\n")
+
+        if self.__extesion == ".js":
+            lista = self.__js.getErrores()
+            for l in lista:
+                errores.write("<tr>\n")
+                errores.write("<td>" + str(contador) + "</td>")
+                errores.write("<td>" + str(l.getFila()) + "</td>")
+                errores.write("<td>" + str(l.getColumna()) + "</td>")
+                errores.write("<td>" + l.getDescripcion() + "</td>")
+                errores.write("<td>" + l.getLexema() + "</td>")
+                errores.write("</tr>\n")
+                contador += 1
+        elif self.__extesion == ".css":
+            lista = self.__css.getErrores()
+            for l in lista:
+                errores.write("<tr>\n")
+                errores.write("<td>" + str(contador) + "</td>")
+                errores.write("<td>" + str(l.getFila()) + "</td>")
+                errores.write("<td>" + str(l.getColumna()) + "</td>")
+                errores.write("<td>" + l.getDescripcion() + "</td>")
+                errores.write("<td>" + l.getLexema() + "</td>")
+                errores.write("</tr>\n")
+                contador += 1
+        elif self.__extesion == ".html":
+            lista = self.__ht.getErrores()
+            for l in lista:
+                errores.write("<tr>\n")
+                errores.write("<td>" + str(contador) + "</td>")
+                errores.write("<td>" + str(l.getFila()) + "</td>")
+                errores.write("<td>" + str(l.getColumna()) + "</td>")
+                errores.write("<td>" + l.getDescripcion() + "</td>")
+                errores.write("<td>" + l.getLexema() + "</td>")
+                errores.write("</tr>\n")
+                contador += 1
+        errores.write("</table>\n")
+        errores.write("</html>")
+        errores.close()
