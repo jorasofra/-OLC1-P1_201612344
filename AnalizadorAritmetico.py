@@ -14,6 +14,9 @@ class AnalizadorAritmetico:
         self.__listaErrores= []
 
     def analisis(self, texto):
+        self.__listaTokens.clear()
+        self.__listaErrores.clear()
+        self.__puntero = 0
         texto = texto + " $"
         while texto[self.__puntero] != "$":
             self.__letra = texto[self.__puntero]

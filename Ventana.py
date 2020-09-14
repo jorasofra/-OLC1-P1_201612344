@@ -42,6 +42,10 @@ class Ventana(QMainWindow):
         elif self.__extesion == ".css":
             self.__css.analisis(self.texto.toPlainText())
             self.generarReporteErrores()
+            bita = self.__css.getBitacora()
+            self.consola.clear()
+            for b in bita:
+                self.consola.appendPlainText(b)
         elif self.__extesion == ".html":
             self.__ht.analisis(self.texto.toPlainText())
             self.generarReporteErrores()
@@ -50,7 +54,8 @@ class Ventana(QMainWindow):
             print(len(self.__arit.getTokens()))
             sintac = AnalizadorSintactico(self.__arit.getTokens())
             sintac.analizar()
-            sintac.validacion()
+            self.consola.clear()
+            self.consola.appendPlainText(sintac.validacion())
 
 
     def generarReporteErrores(self):

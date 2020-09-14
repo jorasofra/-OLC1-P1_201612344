@@ -31,6 +31,7 @@ class AnalizadorJS:
         )
 
     def analisis(self, texto):
+        self.__puntero = 0
         texto = texto +" $"
         while texto[self.__puntero] != "$":
             self.__letra = texto[self.__puntero]

@@ -12,6 +12,7 @@ class AnalizadorCss:
         self.__letra = ''
         self.__listaTokens = []
         self.__listaErrores= []
+        self.__bitacoraMovimiento = []
         self.__reservadas = (
             "color",
             "border",
@@ -67,6 +68,9 @@ class AnalizadorCss:
         )
 
     def analisis(self, texto):
+        self.__listaTokens.clear()
+        self.__listaErrores.clear()
+        self.__bitacoraMovimiento.clear()
         texto = texto + " $"
         while texto[self.__puntero] != "$":
             self.__letra = texto[self.__puntero]
@@ -78,48 +82,63 @@ class AnalizadorCss:
         if self.__letra == "-":
             self.__estado = 6
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == "/":
             self.__estado = 12
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == "\"":
             self.__estado = 1
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == "#":
             self.__estado = 3
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == "(":
             self.__estado = 5
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == ")":
             self.__estado = 16
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == "*":
             self.__estado = 17
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == ",":
             self.__estado = 18
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == ".":
             self.__estado = 19
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == ":":
             self.__estado = 15
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == ";":
             self.__estado = 20
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == "{":
             self.__estado = 21
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == "}":
             self.__estado = 22
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra.isalpha():
             self.__estado = 11
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra.isdigit():
             self.__estado = 7
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 0 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__esVacio():
             self.__estado = 0
             self.__lexema = ""
@@ -133,9 +152,11 @@ class AnalizadorCss:
         if self.__letra == "\"":
             self.__estado = 2
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 1 a " + str(self.__estado) + "con " + self.__letra)
         else:
             self.__estado = 1
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("Acepta en estado 1")
 
     def dos(self):
         self.__agregarToken(TipoToken.CADENA.value)
@@ -143,11 +164,13 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 2")
 
     def tres(self):
         if self.__letra.isalpha() or self.__letra.isdigit():
             self.__estado = 4
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 3 a " + str(self.__estado) + "con " + self.__letra)
         else:
             self.__agregarError()
             self.__estado = 0
@@ -157,12 +180,14 @@ class AnalizadorCss:
         if self.__letra.isalpha() or self.__letra.isdigit():
             self.__estado = 4
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 4 a " + str(self.__estado) + "con " + self.__letra)
         else:
             self.__agregarToken(TipoToken.COLOR.value)
             self.__puntero -= 1
             self.__columna -= 1
             self.__estado = 0
             self.__lexema = ""
+            self.__bitacoraMovimiento.append("Acepta en estado 4")
 
     def cinco(self):
         self.__agregarToken(TipoToken.PARENTESIS_ABRE.value)
@@ -170,14 +195,17 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 5")
 
     def seis(self):
         if self.__letra.isalpha():
             self.__estado = 11
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 6 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra.isdigit():
             self.__estado = 7
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 6 a " + str(self.__estado) + "con " + self.__letra)
         else:
             self.__agregarError()
             self.__estado = 0
@@ -187,18 +215,22 @@ class AnalizadorCss:
         if self.__letra.isdigit():
             self.__estado = 7
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 7 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == ".":
             self.__estado = 9
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 7 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == "%":
             self.__estado = 8
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 7 a " + str(self.__estado) + "con " + self.__letra)
         else:
             self.__agregarToken(TipoToken.ENTERO.value)
             self.__puntero -= 1
             self.__columna -= 1
             self.__estado = 0
             self.__lexema = ""
+            self.__bitacoraMovimiento.append("Acepta en estado 7")
 
     def ocho(self):
         self.__agregarToken(TipoToken.ENTERO.value)
@@ -206,11 +238,13 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 8")
 
     def nueve(self):
         if self.__letra.isdigit():
             self.__estado = 10
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 9 a " + str(self.__estado) + "con " + self.__letra)
         else:
             self.__agregarError()
             self.__estado = 0
@@ -220,20 +254,24 @@ class AnalizadorCss:
         if self.__letra.isdigit():
             self.__estado = 10
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 10 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == "%":
             self.__estado = 23
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 10 a " + str(self.__estado) + "con " + self.__letra)
         else:
             self.__agregarToken(TipoToken.DECIMAL.value)
             self.__puntero -= 1
             self.__columna -= 1
             self.__estado = 0
             self.__lexema = ""
+            self.__bitacoraMovimiento.append("Acepta en estado 10")
 
     def once(self):
         if self.__letra.isdigit() or self.__letra.isalpha() or self.__letra == "-":
             self.__estado = 11
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 11 a " + str(self.__estado) + "con " + self.__letra)
         else:
             if self.__lexema in self.__reservadas:
                 self.__agregarToken(TipoToken.PALABRA_RESERVADA.value)
@@ -245,11 +283,13 @@ class AnalizadorCss:
             self.__columna -= 1
             self.__estado = 0
             self.__lexema = ""
+            self.__agregarToken("Acepta en estado 11")
 
     def doce(self):
         if self.__letra == "*":
             self.__estado = 13
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 12 a " + str(self.__estado) + "con " + self.__letra)
         else:
             self.__agregarError()
             self.__estado = 0
@@ -259,31 +299,38 @@ class AnalizadorCss:
         if self.__letra == "*":
             self.__estado = 14
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 13 a " + str(self.__estado) + " con " + self.__letra)
         else:
             self.__estado = 13
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 13 a " + str(self.__estado) + "con " + self.__letra)
     
     def catorce(self):
         if self.__letra == "/":
             self.__estado = 24
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 14 a " + str(self.__estado) + "con " + self.__letra)
         elif self.__letra == "*":
             self.__estado = 14
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 14 a " + str(self.__estado) + "con " + self.__letra)
         else:
             self.__estado = 13
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 14 a " + str(self.__estado) + "con " + self.__letra)
 
     def quince(self):
         if self.__letra == ":":
             self.__estado = 25
             self.__lexema += self.__letra
+            self.__bitacoraMovimiento.append("De 15 a " + str(self.__estado) + "con " + self.__letra)
         else:
             self.__agregarToken(TipoToken.DOS_PUNTOS.value)
             self.__puntero -= 1
             self.__columna -= 1
             self.__estado = 0
             self.__lexema = ""
+            self.__bitacoraMovimiento.append("Acepta en estado 15")
 
     def dieciseis(self):
         self.__agregarToken(TipoToken.PARENTESIS_CIERRA.value)
@@ -291,6 +338,7 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 16")
 
     def diecisiete(self):
         self.__agregarToken(TipoToken.ASTERISCO.value)
@@ -298,6 +346,7 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 17")
 
     def dieciocho(self):
         self.__agregarToken(TipoToken.COMA.value)
@@ -305,6 +354,7 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 18")
 
     def diecinueve(self):
         self.__agregarToken(TipoToken.PUNTO.value)
@@ -312,6 +362,7 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 19")
 
     def veinte(self):
         self.__agregarToken(TipoToken.PUNTO_COMA.value)
@@ -319,6 +370,7 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 20")
 
     def veintiuno(self):
         self.__agregarToken(TipoToken.LLAVE_ABRE.value)
@@ -326,6 +378,7 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 21")
 
     def veintidos(self):
         self.__agregarToken(TipoToken.LLAVE_CIERRA.value)
@@ -333,6 +386,7 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 22")
 
     def veintitres(self):
         self.__agregarToken(TipoToken.DECIMAL.value)
@@ -340,6 +394,7 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 23")
 
     def veinticuatro(self):
         self.__agregarToken(TipoToken.COMENTARIO.value)
@@ -347,6 +402,7 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 24")
 
     def veinticinco(self):
         self.__agregarToken(TipoToken.DOBLE_DOS_PUNTOS.value)
@@ -354,6 +410,7 @@ class AnalizadorCss:
         self.__columna -= 1
         self.__estado = 0
         self.__lexema = ""
+        self.__bitacoraMovimiento.append("Acepta en estado 25")
 
     def __esVacio(self):
         if self.__letra == ' ':
@@ -368,7 +425,6 @@ class AnalizadorCss:
 
     def __agregarToken(self, tipo):
         nuevo = Token(self.__fila, self.__columna, self.__lexema, tipo)
-        print(self.__lexema)
         self.__listaTokens.append(nuevo)
 
     def __agregarError(self):
@@ -414,7 +470,5 @@ class AnalizadorCss:
         func = estados.get(est)
         func()
 
-    def imprimirLista(self):
-        for tok in self.__listaTokens:
-            print(tok.getLexema())
-            print(tok.getTipoString())
+    def getBitacora(self):
+        return self.__bitacoraMovimiento

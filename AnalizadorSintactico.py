@@ -1,7 +1,7 @@
 from TipoToken import TipoToken as t
 
 class AnalizadorSintactico:
-    
+
     def __init__(self, listaTokens):
         self.__preanalisis = None
         self.__listaTokens = listaTokens
@@ -51,8 +51,8 @@ class AnalizadorSintactico:
             self.__parea(t.ENTERO.value)
         elif self.__preanalisis.getTipo() == t.ID.value:
             self.__parea(t.ID.value)
-        else:
-            self.__listaErrores.append("Error")
+        #else:
+            #self.__listaErrores.append("Error")
 
     def __parea(self, terminal):
         if self.__preanalisis.getTipo() == terminal:
@@ -65,6 +65,6 @@ class AnalizadorSintactico:
 
     def validacion(self):
         if len(self.__listaErrores) > 0:
-            print("No valido")
+            return("No Valido")
         else:
-            print("Valido")
+            return("Valido")
