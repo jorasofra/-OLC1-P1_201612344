@@ -124,6 +124,7 @@ class AnalizadorCss:
             self.__estado = 0
             self.__lexema = ""
         else:
+            self.__lexema += self.__letra
             self.__agregarError()
             self.__estado = 0
             self.__lexema = ""

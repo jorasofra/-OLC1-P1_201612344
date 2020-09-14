@@ -2,6 +2,8 @@ import sys, os
 from AnalizadorCSS import AnalizadorCss
 from AnalizadorHTML import AnalizadorHTML
 from AnalizadorJS import AnalizadorJS
+from AnalizadorAritmetico import AnalizadorAritmetico
+from AnalizadorSintactico import AnalizadorSintactico
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QApplication, QAction, qApp, QWidget, QInputDialog, QLineEdit, QFileDialog
 
@@ -18,29 +20,38 @@ class Ventana(QMainWindow):
         self.__js = AnalizadorJS()
         self.__css = AnalizadorCss()
         self.__ht = AnalizadorHTML()
+        self.__arit = AnalizadorAritmetico()
 
     def abrirArchivo(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         self.__fileName, _ = QFileDialog.getOpenFileName(self, "Abrir Archivo", "C:/Users/solis/OneDrive/Escritorio/Rafael/Compiladores 1/Laboratorio/Entradas", 
-            "JavaScript Files (*.js);; CSS Files (*.css);; HTML Files (*.html)", options = options)
+            "JavaScript Files (*.js);; CSS Files (*.css);; HTML Files (*.html);; Analizador Sintactico (*.rmt)", options = options)
         if self.__fileName:
             file = open(self.__fileName, "r")
             texto = file.read()
             self.texto.clear()
             self.texto.appendPlainText(texto)
-
             self.__extesion = os.path.splitext(self.__fileName)[1]
             file.close()
 
     def analizar(self):
         if self.__extesion == ".js":
             self.__js.analisis(self.texto.toPlainText())
+            self.generarReporteErrores()
         elif self.__extesion == ".css":
             self.__css.analisis(self.texto.toPlainText())
+            self.generarReporteErrores()
         elif self.__extesion == ".html":
             self.__ht.analisis(self.texto.toPlainText())
-        self.generarReporteErrores()
+            self.generarReporteErrores()
+        elif self.__extesion == ".rmt":
+            self.__arit.analisis(self.texto.toPlainText())
+            print(len(self.__arit.getTokens()))
+            sintac = AnalizadorSintactico(self.__arit.getTokens())
+            sintac.analizar()
+            sintac.validacion()
+
 
     def generarReporteErrores(self):
         archivo = os.path.split(self.__fileName)[1]
